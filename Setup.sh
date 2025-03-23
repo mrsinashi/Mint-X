@@ -13,10 +13,15 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # ===== Создание необходимых директорий =====
 mkdir -p "$BACKUPS_DIR" "$LOGS_DIR"
+chmod 775 $BACKUPS_DIR
+chmod 775 $LOGS_DIR
+chown $SUDO_USER:users -R $BACKUPS_DIR
+chown $SUDO_USER:users -R $LOGS_DIR
 
 # ===== Вспомогательные функции =====
 
@@ -24,16 +29,17 @@ mkdir -p "$BACKUPS_DIR" "$LOGS_DIR"
 log() {
     local message="$1"
     echo "[$(date +%H:%M:%S)] $message" >> "$LOG_FILE"
+    chown 666 $LOG_FILE
     echo -e "$message"
 }
 
 # Функции для форматированного вывода
 info() {
-    log "${BLUE}[INFO]${NC} $1"
+    log "${CYAN}[INFO]${NC} $1"
 }
 
 success() {
-    log "${GREEN}[OK]${NC} $1"
+    log "${GREEN}[ OK ]${NC} $1"
 }
 
 error() {
@@ -41,17 +47,17 @@ error() {
 }
 
 warning() {
-    log "${YELLOW}[WARNING]${NC} $1"
+    log "${YELLOW}[WARN]${NC} $1"
 }
 
 # Функция для выполнения команды с выводом прогресса
 execute_with_progress() {
     local cmd="$1"
     local msg="$2"
-    
-    echo -ne "${BLUE}[INFO]${NC} $msg... "
-    log "[EXECUTING] $cmd"
-    
+
+    echo -ne "${CYAN}[INFO]${NC} $msg... "
+    log "[EXEC] $cmd"
+
     if eval "$cmd" >> "$LOG_FILE" 2>&1; then
         echo -e "${GREEN}Готово${NC}"
         return 0
@@ -87,12 +93,12 @@ run_script() {
     local script="$1"
     if [ -f "$script" ]; then
         echo ""
-        info "===== Запуск скрипта: ${RED}$(basename "$script")${NC} ====="
+        info "===== Запуск скрипта: ${YELLOW}$(basename "$script")${NC} ====="
         if bash "$script"; then
             success "===== Скрипт ${GREEN}$(basename "$script")${NC} выполнен успешно ====="
             return 0
         else
-            error "===== Ошибка при выполнении скрипта $(basename "$script") ====="
+            error "===== Ошибка при выполнении скрипта ${RED}$(basename "$script")${NC} ====="
             return 1
         fi
     else
@@ -109,39 +115,41 @@ show_menu() {
     fi
 
     local CHOICE=$(whiptail --title "Mint-X Setup" --menu "Выберите действие:" 20 78 12 \
-        "1" "Выполнить все" \
-        "2" "Настройка системных параметров" \
-        "3" "Установка пользовательских программ" \
-        "4" "Установка рабочих программ" \
-        "5" "Применение конфигураций" \
-        "6" "Очистка системы" 3>&1 1>&2 2>&3)
-    
+        "0" "Выполнить все" \
+        "1" "Настройка системных параметров" \
+        "2" "Установка пользовательских программ" \
+        "3" "Применение конфигураций" \
+        "4" "Очистка системы" \
+        "5" "Выход из программы" 3>&1 1>&2 2>&3)
+
     if [ $? -ne 0 ]; then
         info "Отмена операции"
         return 1
     fi
 
     case "$CHOICE" in
-        1)
+        0)
             run_all
+            exit 0
             ;;
-        2)
+        1)
             system_configure
             ;;
+        2)
+            install_software
+            ;;
         3)
-            install_user_software
-            ;;
-        4)
-            install_work_software
-            ;;
-        5)
             apply_configs
             ;;
-        6)
+        4)
             system_cleanup
             ;;
-        *)
+        5)
             info "Выход из программы"
+            exit 0
+            ;;
+        *)
+            info "Отмена"
             exit 0
             ;;
     esac
@@ -155,42 +163,35 @@ show_menu() {
 # Обновление системы и базовая настройка
 system_base() {
     info "[Запуск обновления системы и базовой настройки]"
-    run_script "$SCRIPTS_DIR/base.sh"
+    run_script "$SCRIPTS_DIR/0_base.sh"
 	echo ""
 }
 
 # Настройка системных параметров
 system_configure() {
     info "[Запуск настройки системных параметров]"
-    run_script "$SCRIPTS_DIR/services.sh"
+    run_script "$SCRIPTS_DIR/1_system.sh"
 	echo ""
 }
 
 # Установка пользовательских программ
-install_user_software() {
+install_software() {
     info "[Установка пользовательских программ]"
-    run_script "$SCRIPTS_DIR/user_apps.sh"
-	echo ""
-}
-
-# Установка рабочих программ
-install_work_software() {
-    info "[Установка рабочих программ]"
-    run_script "$SCRIPTS_DIR/work_apps.sh"
+    run_script "$SCRIPTS_DIR/2_software.sh"
 	echo ""
 }
 
 # Применение конфигураций
 apply_configs() {
     info "[Применение конфигураций]"
-    run_script "$SCRIPTS_DIR/apply_configs.sh"
+    run_script "$SCRIPTS_DIR/3_configs.sh"
 	echo ""
 }
 
 # Очистка системы
 system_cleanup() {
     info "[Очистка системы]"
-    run_script "$SCRIPTS_DIR/cleanup.sh"
+    run_script "$SCRIPTS_DIR/4_cleanup.sh"
 	echo ""
 }
 
@@ -199,8 +200,7 @@ run_all() {
     info "[Выполнение всех шагов установки]"
 	echo ""
     system_configure
-    install_user_software
-    install_work_software
+    install_software
     apply_configs
     system_cleanup
     success "Все шаги выполнены"
@@ -214,10 +214,10 @@ main() {
 	echo ""
 
     system_base
-    
+
     # Проверка root-прав
     check_root
-    
+
     # Отображение меню
     show_menu
 }
