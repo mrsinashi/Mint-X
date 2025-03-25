@@ -75,6 +75,9 @@ echo ""
 info "Установка базовых пакетов..."
 BASE_PACKAGES=(
     git
+    cmake
+    pkg-config
+    build-essential
     curl
     wget
     htop
@@ -95,10 +98,11 @@ BASE_PACKAGES=(
     gpg
     util-linux
     xutils
-    cmake
     pkg-config
     python3
     x11-utils
+    gcc
+    make
 )
 
 info "Проверка наличия базовых пакетов..."

@@ -176,9 +176,40 @@ else
     error "Файл $BASHRC_FILE не найден"
 fi
 
+# 6. Комментирование секции с проверкой цветного терминала и добавление принудительной настройки цветов
+info "Настройка цветного вывода в терминале..."
+BASHRC_FILE="/home/$SUDO_USER/.bashrc"
+backup_file "$BASHRC_FILE"
+
+if [ -f "$BASHRC_FILE" ]; then
+    # Проверяем, закомментирована ли уже секция
+    if grep -q "^# set a fancy prompt" "$BASHRC_FILE" && ! grep -q "^# case \"\$TERM\" in" "$BASHRC_FILE"; then
+        # Комментируем секцию, если она не закомментирована
+        sed -i '/^# set a fancy prompt/,/^esac/s/^case/# case/' "$BASHRC_FILE"
+        sed -i '/^# set a fancy prompt/,/^esac/s/^[[:space:]]*xterm/# xterm/' "$BASHRC_FILE"
+        sed -i '/^# set a fancy prompt/,/^esac/s/^esac/# esac/' "$BASHRC_FILE"
+
+        # Добавляем новые строки после закомментированной секции
+        sed -i '/^# esac/a force_color_prompt=yes\ncolor_prompt=yes' "$BASHRC_FILE"
+
+        success "Настройка цветного вывода в терминале выполнена"
+    else
+        # Проверяем, есть ли уже строки force_color_prompt и color_prompt
+        if ! grep -q "^force_color_prompt=yes" "$BASHRC_FILE" || ! grep -q "^color_prompt=yes" "$BASHRC_FILE"; then
+            # Добавляем строки после секции, если они отсутствуют
+            sed -i '/^# set a fancy prompt/,/^# esac/!b;/^# esac/a force_color_prompt=yes\ncolor_prompt=yes' "$BASHRC_FILE"
+            success "Добавлены настройки принудительного цветного вывода"
+        else
+            info "Настройки цветного вывода уже присутствуют в .bashrc"
+        fi
+    fi
+else
+    error "Файл $BASHRC_FILE не найден"
+fi
+
 echo ""
 
-# 6. Создание структуры каталогов
+# 7. Создание структуры каталогов
 info "Создание структуры каталогов..."
 mkdir -p /distr/progs
 mkdir -p /distr/drivers
@@ -191,7 +222,7 @@ success "Структура каталогов создана и настрое�
 
 echo ""
 
-# 7. Настройка /etc/chrony/chrony.conf
+# 8. Настройка /etc/chrony/chrony.conf
 info "Настройка NTP-сервера..."
 CHRONY_CONF="/etc/chrony/chrony.conf"
 

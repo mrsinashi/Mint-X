@@ -1,0 +1,159 @@
+# ========== Основные настройки ========== #
+
+# Клавиши-модификаторы
+set $win Mod4
+set $alt Mod1
+
+# Шрифт для заголовков окон
+font pango:Hack Nerd Font 10
+
+# Не активировать окно при наведении курсора
+focus_follows_mouse no
+
+
+
+# ========== Автозапуск ========== #
+
+# Автозагрузка стандартных компонентов
+exec_always --no-startup-id setxkbmap -model pc105 -layout us,ru -option grp:alt_shift_toggle
+exec_always --no-startup-id feh --bg-scale ~/Изображения/Обои/pirs-gory-ozero.jpg
+
+exec_always --no-startup-id picom --config ~/.config/picom/picom.conf -b
+exec_always --no-startup-id ~/.config/polybar/scripts/launch.sh
+
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id nm-applet
+
+exec --no-startup-id gxkb
+exec --no-startup-id dunst
+
+exec_always --no-startup-id ksuperkey
+
+# Автозагрузка дополнительных программ
+exec --no-startup-id flameshot
+
+
+
+# ========== Комбинации клавиш ========== #
+
+# Закрытия окон
+bindsym $win+F4 kill
+bindsym $alt+F4 kill
+
+# Перезагрузка и выход
+bindsym $win+Shift+c reload
+bindsym $win+Shift+r restart
+bindsym $win+Shift+e exec "i3-msg exit"
+
+# Настройка звука
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# Сочетания клавиш для запуска приложений
+bindsym $alt+F1 exec rofi -kb-cancel 'Escape' -show drun -show-icons -icon-theme We10X
+bindsym $win+e exec thunar $HOME
+bindsym $win+t exec kitty
+bindsym Control+Shift+Escape exec kitty -e htop
+
+
+
+# ========== Управление окнами и рабочими местами ========== #
+
+# Переключение на рабочее пространство
+bindsym $win+1 workspace number 1
+bindsym $win+2 workspace number 2
+bindsym $win+3 workspace number 3
+bindsym $win+4 workspace number 4
+bindsym $win+5 workspace number 5
+bindsym $win+6 workspace number 6
+bindsym $win+7 workspace number 7
+bindsym $win+8 workspace number 8
+bindsym $win+9 workspace number 9
+bindsym $win+0 workspace number 10
+
+# Отправка окна на рабочее место по номеру
+bindsym $win+Shift+1 move container to workspace number 1
+bindsym $win+Shift+2 move container to workspace number 2
+bindsym $win+Shift+3 move container to workspace number 3
+bindsym $win+Shift+4 move container to workspace number 4
+bindsym $win+Shift+5 move container to workspace number 5
+bindsym $win+Shift+6 move container to workspace number 6
+bindsym $win+Shift+7 move container to workspace number 7
+bindsym $win+Shift+8 move container to workspace number 8
+bindsym $win+Shift+9 move container to workspace number 9
+bindsym $win+Shift+0 move container to workspace number 10
+
+# Управление окнами мышью
+floating_modifier $win
+tiling_drag modifier titlebar
+
+# Позиционирование окон внутри рабочего места
+bindsym $win+Left move left
+bindsym $win+Right move right
+bindsym $win+Up move up
+bindsym $win+Down move down
+
+# Отправка окна на следующее/предыдущее рабочее место с переключением на него
+bindsym $win+Shift+Right exec --no-startup-id ~/.config/i3/scripts/move_to_workspace.sh 1
+bindsym $win+Shift+Left exec --no-startup-id ~/.config/i3/scripts/move_to_workspace.sh -1
+
+# Изменение размера окна с помощью колесика мыши
+bindsym --whole-window $win+button4 resize grow height 5 px or 5 ppt
+bindsym --whole-window $win+button5 resize shrink height 5 px or 5 ppt
+
+bindsym --whole-window $win+Shift+button4 resize grow width 5 px or 5 ppt
+bindsym --whole-window $win+Shift+button5 resize shrink width 5 px or 5 ppt
+
+bindsym --whole-window $alt+button4 resize grow width 5 px or 5 ppt
+bindsym --whole-window $alt+button5 resize shrink width 5 px or 5 ppt
+
+# Режим изменения размера окон
+mode "resize" {
+        bindsym j resize shrink width 10 px or 10 ppt
+        bindsym k resize grow height 10 px or 10 ppt
+        bindsym l resize shrink height 10 px or 10 ppt
+        bindsym semicolon resize grow width 10 px or 10 ppt
+
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $win+r mode "default"
+
+# Изменение размера окна с помощью колесика мыши + $win (Win)
+bindsym --whole-window $win+button4 resize grow height 5 px or 5 ppt
+bindsym --whole-window $win+button5 resize shrink height 5 px or 5 ppt
+
+bindsym --whole-window $win+Shift+button4 resize grow width 5 px or 5 ppt
+bindsym --whole-window $win+Shift+button5 resize shrink width 5 px or 5 ppt
+
+bindsym --whole-window $alt+button4 resize grow width 5 px or 5 ppt
+bindsym --whole-window $alt+button5 resize shrink width 5 px or 5 ppt
+}
+
+bindsym $win+r mode "resize"
+
+
+
+# ========== Внешний вид =========== #
+
+# Настройка внешнего вида
+default_border pixel 2
+default_floating_border pixel 4
+hide_edge_borders smart
+gaps inner 4
+gaps outer 0
+
+# Цвета окон
+client.focused          #4c7899 #285577 #ffffff #2e9ef4   #285577
+client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
+client.unfocused        #333333 #222222 #888888 #292d2e   #222222
+client.urgent           #2f343a #900000 #ffffff #900000   #900000
+client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+client.background       #ffffff

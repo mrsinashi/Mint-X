@@ -1,0 +1,101 @@
+configuration {
+    background-color: #282c34;
+    border-color: #000000;
+    text-color: #abb2bf;
+    spacing: 0;
+    width: 40%;
+}
+
+entry {
+    text-color: #ffffff;
+    background-color: #333840;
+}
+
+window {
+    border: 0;
+    border-radius: 10px;
+    padding: 1px;
+    background-color: #282c34;
+}
+
+mainbox {
+    border: 0;
+    padding: 0;
+}
+
+textbox {
+    text-color: #abb2bf;
+}
+
+message {
+    border: 0;
+    padding: 1px;
+}
+
+textbox-prompt-colon {
+    expand: false;
+    str: "";
+    margin: 0em 0em 0em 0em;
+    text-color: #dddddd;
+}
+
+prompt {
+    enabled: false;
+    text-color: #ff0000;
+}
+
+num-filtered-rows {
+    enabled: false;
+}
+
+num-rows {
+  enabled: false;
+}
+
+entry {
+    placeholder: "";
+    text-color: #eeeeee;
+    padding: 6px;
+}
+
+listview {
+    fixed-height: 0;
+    border: 0;
+    spacing: 2px;
+    scrollbar: false;
+    padding: 10px 0px 0px;
+}
+
+element {
+    border: 0;
+    padding: 3px;
+}
+
+element normal.normal {
+    background-color: #282c34;
+    text-color: #e2e2e2;
+}
+
+element alternate.normal {
+    background-color: #333840;
+    text-color: #e2e2e2;
+}
+
+element selected.normal {
+    background-color: #3b8d8d;
+    text-color: #ffffff;
+}
+
+element-icon {
+    size: 28px;
+    padding: 0px 6px 0px 4px;
+}
+
+element-text {
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+inputbar {
+    children: [ prompt, textbox-prompt-colon, entry ];
+}

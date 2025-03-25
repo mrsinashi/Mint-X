@@ -88,10 +88,11 @@ UNWANTED_PACKAGES=(
     warpinator*
     xreader*
     xed*
-    transmission*
     rhythmbox*
     webapp-manager
     thingy
+    mintreport
+    mintupdate
 )
 
 info "Проверка наличия нежелательных пакетов..."
@@ -126,8 +127,9 @@ echo ""
 # Установка дополнительных пакетов
 info "Установка дополнительных пакетов..."
 ADD_PACKAGES=(
+    i3
     polybar
-    alacritty
+    kitty
     rofi
     flameshot
     picom
@@ -138,6 +140,8 @@ ADD_PACKAGES=(
     dunst
     redshift
     redshift-gtk
+    xdotool
+    jq
 )
 
 info "Проверка наличия дополнительных пакетов..."
@@ -181,6 +185,70 @@ else
     else
         info "Нет доступных пакетов для установки"
     fi
+fi
+
+# Установка ksuperkey для привязки клавиши Win к меню приложений
+info "Установка ksuperkey..."
+# Проверяем, установлен ли уже ksuperkey
+if ! command -v ksuperkey &> /dev/null; then
+    # Устанавливаем зависимости
+    apt install -y libx11-dev libxtst-dev
+
+    # Создаем временную директорию для сборки
+    mkdir -p /distr/temp/ksuperkey
+    cd /distr/temp/ksuperkey
+
+    # Клонируем репозиторий и собираем ksuperkey
+    git clone https://github.com/hanschen/ksuperkey.git .
+    make
+    make install
+    success "ksuperkey успешно установлен"
+else
+    info "ksuperkey уже установлен"
+fi
+
+# Установка Google Chrome
+info "Установка Google Chrome..."
+
+# Создание директории для ключей, если она не существует
+mkdir -p /etc/apt/trusted.gpg.d
+
+# Проверка наличия ключа Google
+if [ -f "/etc/apt/trusted.gpg.d/google.gpg" ]; then
+    info "GPG ключ Google уже установлен, пропускаем импорт"
+else
+    # Скачивание и импорт ключа Google
+    execute_with_progress "curl -fSsL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google.gpg" "Импорт ключа Google"
+    success "GPG ключ Google успешно импортирован"
+fi
+
+# Добавление репозитория Google Chrome
+execute_with_progress "echo 'deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main' | tee /etc/apt/sources.list.d/google-chrome.list" "Добавление репозитория Google Chrome"
+
+# Обновление списка пакетов
+execute_with_progress "apt update" "Обновление списка пакетов"
+
+# Установка Google Chrome
+execute_with_progress "apt install -y google-chrome-stable" "Установка Google Chrome"
+
+# Установка We10X-icon-theme
+info "Установка We10X-icon-theme..."
+# Проверяем, установлена ли уже тема
+if [ -d "/usr/share/icons/We10X" ] || [ -d "/home/$SUDO_USER/.local/share/icons/We10X" ] || [ -d "/home/$SUDO_USER/.icons/We10X" ]; then
+    info "We10X-icon-theme уже установлена"
+else
+    # Создаем временную директорию для сборки
+    mkdir -p /distr/temp/we10x
+    cd /distr/temp/we10x
+
+    # Клонируем репозиторий
+    git clone https://github.com/yeyushengfan258/We10X-icon-theme.git .
+
+    # Устанавливаем тему
+    chmod +x install.sh
+    ./install.sh
+
+    success "We10X-icon-theme успешно установлена"
 fi
 
 echo ""
