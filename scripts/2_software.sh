@@ -255,14 +255,8 @@ execute_with_progress "echo 'deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/mi
 # Обновление списка пакетов
 execute_with_progress "apt update" "Обновление списка пакетов"
 
-# Проверка, установлен ли уже VS Code
-if dpkg -l | grep -q "code"; then
-    info "Visual Studio Code уже установлен, пропускаем установку"
-else
-    # Установка VS Code
-    execute_with_progress "apt install -y code" "Установка Visual Studio Code"
-    success "Visual Studio Code успешно установлен"
-fi
+# Установка VS Code
+execute_with_progress "apt install -y code" "Установка Visual Studio Code"
 
 # Установка Telegram с официального сайта
 info "Установка Telegram..."
