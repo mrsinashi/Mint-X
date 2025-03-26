@@ -57,6 +57,15 @@ bindsym $alt+F1 exec rofi -kb-cancel 'Escape' -show drun -show-icons -icon-theme
 bindsym $win+e exec thunar $HOME
 bindsym $win+t exec kitty
 bindsym Control+Shift+Escape exec kitty -e htop
+bindsym $win+b exec google-chrome
+bindsym $win+Shift+b exec google-chrome --incognito
+bindsym $win+c exec code
+
+
+
+# ========== Привязка окон к рабочим местам ========== #
+assign [class="Google-chrome"] workspace number 2
+assign [class="Code"] workspace number 3
 
 
 
@@ -73,6 +82,10 @@ bindsym $win+7 workspace number 7
 bindsym $win+8 workspace number 8
 bindsym $win+9 workspace number 9
 bindsym $win+0 workspace number 10
+
+# Циклическое переключение рабочих мест
+bindsym $alt+Tab exec ".config/i3/scripts/workspace-switcher.sh"
+bindsym $win+Tab exec ".config/i3/scripts/workspace-switcher.sh backward"
 
 # Отправка окна на рабочее место по номеру
 bindsym $win+Shift+1 move container to workspace number 1
@@ -147,7 +160,7 @@ bindsym $win+r mode "resize"
 default_border pixel 2
 default_floating_border pixel 4
 hide_edge_borders smart
-gaps inner 4
+gaps inner 0
 gaps outer 0
 
 # Цвета окон

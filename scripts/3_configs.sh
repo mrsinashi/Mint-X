@@ -143,7 +143,7 @@ fi
 
 # Функция для установки шрифтов
 function install_fonts() {
-    local src_dir="$CONFIGS_DIR/Fonts"
+    local src_dir="$CONFIGS_DIR/fonts"
     local user_font_dir="$USER_HOME/.local/share/fonts"
     local system_font_dir="/usr/local/share/fonts"
 

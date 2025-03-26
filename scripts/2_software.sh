@@ -142,6 +142,9 @@ ADD_PACKAGES=(
     redshift-gtk
     xdotool
     jq
+    gxkb
+    openvpn
+    xarchiver
 )
 
 info "Проверка наличия дополнительных пакетов..."
@@ -230,6 +233,72 @@ execute_with_progress "apt update" "Обновление списка пакет
 
 # Установка Google Chrome
 execute_with_progress "apt install -y google-chrome-stable" "Установка Google Chrome"
+
+# Установка Visual Studio Code
+info "Установка Visual Studio Code..."
+
+# Создание директории для ключей, если она не существует
+mkdir -p /etc/apt/trusted.gpg.d
+
+# Проверка наличия ключа Microsoft
+if [ -f "/etc/apt/trusted.gpg.d/microsoft.gpg" ]; then
+    info "GPG ключ Microsoft уже установлен, пропускаем импорт"
+else
+    # Скачивание и импорт ключа Microsoft
+    execute_with_progress "curl -fSsL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft.gpg" "Импорт ключа Microsoft"
+    success "GPG ключ Microsoft успешно импортирован"
+fi
+
+execute_with_progress "echo 'deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main' | tee /etc/apt/sources.list.d/microsoft-vscode.list" "Добавление репозитория VS Code"
+
+# Обновление списка пакетов
+execute_with_progress "apt update" "Обновление списка пакетов"
+
+# Проверка, установлен ли уже VS Code
+if dpkg -l | grep -q "code"; then
+    info "Visual Studio Code уже установлен, пропускаем установку"
+else
+    # Установка VS Code
+    execute_with_progress "apt install -y code" "Установка Visual Studio Code"
+    success "Visual Studio Code успешно установлен"
+fi
+
+# Установка Telegram с официального сайта
+info "Установка Telegram..."
+
+# Проверяем, установлен ли уже Telegram
+if [ -d "/opt/telegram" ] || [ -f "/usr/bin/telegram" ]; then
+    info "Telegram уже установлен"
+else
+    # Создаем временную директорию для загрузки
+    mkdir -p /distr/temp/telegram
+    cd /distr/temp/telegram
+
+        execute_with_progress "wget -O telegram.tar.xz https://telegram.org/dl/desktop/linux" "Загрузка Telegram (64-bit)"
+
+    # Распаковываем архив
+    execute_with_progress "tar -xJf telegram.tar.xz -C /opt/" "Распаковка Telegram"
+
+    # Переименовываем директорию для удобства
+    execute_with_progress "mv /opt/Telegram* /opt/telegram" "Настройка директории Telegram"
+
+    # Создаем символическую ссылку
+    execute_with_progress "ln -sf /opt/telegram/Telegram /usr/bin/telegram" "Создание символической ссылки"
+
+    # Создаем .desktop файл для отображения в меню приложений
+    cat > /usr/share/applications/telegram.desktop << EOL
+[Desktop Entry]
+Name=Telegram
+Comment=Official desktop version of Telegram messaging app
+Exec=/usr/bin/telegram
+Icon=/opt/telegram/telegram.svg
+Terminal=false
+Type=Application
+Categories=Network;InstantMessaging;
+EOL
+
+    success "Telegram успешно установлен"
+fi
 
 # Установка We10X-icon-theme
 info "Установка We10X-icon-theme..."

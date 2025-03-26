@@ -103,6 +103,7 @@ add_alias_if_not_exists() {
 add_alias_if_not_exists "hgrep" "history | grep"
 add_alias_if_not_exists "hl" "history | less"
 add_alias_if_not_exists "clip" "xclip -sel clip"
+add_alias_if_not_exists "wprop" 'xprop | grep -i "WM_CLASS"'
 
 chmod 775 $BASH_ALIASES_FILE
 chown $SUDO_USER:users $BASH_ALIASES_FILE
