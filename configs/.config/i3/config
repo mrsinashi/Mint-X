@@ -63,9 +63,15 @@ bindsym $win+c exec code
 
 
 
-# ========== Привязка окон к рабочим местам ========== #
+# ========== Настройка окон ========== #
+
+# Привязка окон к рабочим местам
 assign [class="Google-chrome"] workspace number 2
 assign [class="Code"] workspace number 3
+
+# Настрока режимов окон
+for_window [class="^Telegram"] floating enable, resize set 1200 750, move position center
+for_window [class="^telegram"] floating enable, resize set 1200 750, move position center
 
 
 
@@ -170,7 +176,7 @@ gaps inner 0
 gaps outer 0
 
 # Цвета окон
-client.focused          #4c7899 #285577 #ffffff #2e9ef4   #285577
+client.focused          #4aaeb5 #2f949c #ffffff #2fd0f5   #188e96
 client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
 client.unfocused        #333333 #222222 #888888 #292d2e   #222222
 client.urgent           #2f343a #900000 #ffffff #900000   #900000
