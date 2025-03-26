@@ -103,6 +103,12 @@ bindsym $win+Shift+0 move container to workspace number 10
 floating_modifier $win
 tiling_drag modifier titlebar
 
+# Переключение режимов окон
+bindsym $win+space floating toggle
+bindsym $win+y focus mode_toggle
+bindsym $win+f [floating] resize set 100ppt 96ppt; [floating] move position 0 0
+bindsym $win+Shift+f [floating] resize set 1200 750; [floating] move position center
+
 # Позиционирование окон внутри рабочего места
 bindsym $win+Left move left
 bindsym $win+Right move right

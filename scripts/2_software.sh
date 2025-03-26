@@ -145,6 +145,7 @@ ADD_PACKAGES=(
     gxkb
     openvpn
     xarchiver
+    gh
 )
 
 info "Проверка наличия дополнительных пакетов..."
